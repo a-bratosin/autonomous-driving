@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 
-# Importing your custom IMU script
-from imu_node import imu_reader
+# Import the IMU reader script directly
+import imu_reader
 
 class ImuPublisher(Node):
     def __init__(self):
@@ -29,7 +31,7 @@ class ImuPublisher(Node):
         msg.header.frame_id = "imu_link"
 
         try:
-            # Call the function from your imu_reader.py
+            # Call the function from imu_reader.py
             accel, gyro = imu_reader.read_sensor_data(self.bus)
             
             # Map Angular velocity (rad/s)
