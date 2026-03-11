@@ -1,3 +1,4 @@
+ros2_ws_laptop/src/rf2o_laser_odometry
 ros2_ws_laptop/build
 ros2_ws_laptop/install
 ros2_ws_laptop/log
@@ -5,4 +6,5 @@ ros2_ws_pi/src/sllidar_ros2
 ros2_ws_pi/build
 ros2_ws_pi/install
 ros2_ws_pi/log
+ros2_ws_laptop/udp_data_splitter.py
 
