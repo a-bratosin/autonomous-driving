@@ -1,0 +1,23 @@
+FROM ros:humble-ros-base
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    ros-humble-rmw-cyclonedds-cpp \
+    python3-colcon-common-extensions \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the CycloneDDS configuration directly into the image
+COPY cyclonedds_pi.xml /root/cyclonedds.xml
+
+# Set CycloneDDS environment variables
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV CYCLONEDDS_URI=file:///root/cyclonedds.xml
+
+# Source ROS 2 setup automatically for interactive shells
+RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+
+WORKDIR /root/ros2_ws_pi
+
+# At runtime, ensure the src directory exists, clone the lidar package if missing, then start bash
+CMD ["bash", "-c", "mkdir -p src && if [ ! -d 'src/sllidar_ros2' ]; then git clone https://github.com/Slamtec/sllidar_ros2.git src/sllidar_ros2; fi && exec bash"]
