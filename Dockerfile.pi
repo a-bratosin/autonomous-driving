@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
     git \
     python3-smbus2 \
+    python3-lgpio \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the CycloneDDS configuration directly into the image
