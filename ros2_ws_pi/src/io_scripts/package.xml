@@ -19,6 +19,7 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
   <exec_depend>sllidar_ros2</exec_depend>
+  <depend>script_msgs</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

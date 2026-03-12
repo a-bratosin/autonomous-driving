@@ -18,7 +18,7 @@
   <depend>geometry_msgs</depend>
 
   <!-- Your custom message package -->
-  <depend>communication_interfaces</depend>
+  <depend>script_msgs</depend>
 
   <!-- For python setup tools -->
   <export>

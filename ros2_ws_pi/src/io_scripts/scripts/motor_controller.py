@@ -5,7 +5,7 @@ from rclpy.node import Node
 import lgpio
 
 # Import the custom message from this package
-from io_scripts.msg import MotorCommandObj
+from script_msgs.msg import MotorCommandObj
 
 class MotorControllerNode(Node):
     def __init__(self):

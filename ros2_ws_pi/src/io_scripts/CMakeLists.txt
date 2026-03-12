@@ -9,11 +9,8 @@ find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(script_msgs REQUIRED)
 
-# Generate custom messages
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/MotorCommandObj.msg"
-)
 
 # Install Python scripts
 install(PROGRAMS

@@ -13,7 +13,7 @@ import math
 import threading
 from scipy.io import loadmat
 
-from communication_interfaces.msg import MotorCommandObj
+from script_msgs.msg import MotorCommandObj
 
 
 class NMPCNode(Node):

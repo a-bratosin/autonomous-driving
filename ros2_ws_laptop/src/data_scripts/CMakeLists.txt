@@ -6,7 +6,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(communication_interfaces REQUIRED)  # <-- your custom message package
+find_package(script_msgs REQUIRED)  # <-- your custom message package
 
 # Install Python modules
 ament_python_install_package(${PROJECT_NAME})
@@ -20,5 +20,10 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
+
+# Install launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
 ament_package()
 
