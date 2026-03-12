@@ -2,15 +2,17 @@
 <CycloneDDS xmlns="https://cdds.io/config">
     <Domain Id="any">
         <General>
-            <NetworkInterfaceAddress>192.168.0.187</NetworkInterfaceAddress>
+            <Interfaces>
+                <NetworkInterface address="192.168.0.187"/>
+            </Interfaces>
             <AllowMulticast>false</AllowMulticast>
         </General>
         <Discovery>
             <Peers>
                 <Peer address="192.168.0.186"/>
+                <Peer address="localhost"/>
             </Peers>
             <ParticipantIndex>auto</ParticipantIndex>
         </Discovery>
     </Domain>
-</CycloneDDS>
-
+</CycloneDDS>	

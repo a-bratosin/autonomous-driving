@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
     git \
     libboost-python-dev \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the CycloneDDS configuration directly into the image
@@ -17,6 +18,8 @@ ENV CYCLONEDDS_URI=file:///root/cyclonedds.xml
 
 # Source ROS 2 setup automatically for interactive shells
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+
+RUN pip install casadi scipy
 
 WORKDIR /root/ros2_ws_laptop
 
