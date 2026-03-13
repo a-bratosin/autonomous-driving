@@ -16,7 +16,6 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(rf2o_launch_file)
         ),
 
-        # 2. Launch ekf_node.py
         Node(
             package='data_scripts',
             executable='ekf_node.py',
@@ -24,11 +23,17 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # 3. Launch mpc_node.py
         Node(
             package='data_scripts',
             executable='mpc_node.py',
             name='mpc_node',
+            output='screen'
+        ),
+
+        Node(
+            package='data_scripts',
+            executable='debug_plotter.py',
+            name='debug_node',
             output='screen'
         )
     ])

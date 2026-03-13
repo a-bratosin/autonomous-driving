@@ -17,6 +17,7 @@ install(
     data_scripts/ekf_node.py
     data_scripts/trajectory_plotter.py
     data_scripts/mpc_node.py
+    data_scripts/debug_plotter.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

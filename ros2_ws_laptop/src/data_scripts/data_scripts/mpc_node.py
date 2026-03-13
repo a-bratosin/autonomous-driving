@@ -6,6 +6,7 @@ from rclpy.qos import QoSProfile
 
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Pose
 
 import casadi as cas
 import numpy as np
@@ -33,6 +34,9 @@ class NMPCNode(Node):
         # Subscribers
         self.create_subscription(Odometry, '/ekf_odom', self.cb_ekf, qos)
         self.create_subscription(Imu, '/imu/data_raw', self.cb_imu, qos)
+
+        self.curr_pose_pub = self.create_publisher(Pose, '/curr_pose', qos)
+        self.ref_pose_pub = self.create_publisher(Pose, '/ref_pose', qos)
 
         self.get_logger().info("NMPC node started")
 
@@ -199,6 +203,22 @@ class NMPCNode(Node):
 
             self.u_warm = sol.value(self.u_v)
             self.x_warm = sol.value(self.x_v)
+
+            curr_msg = Pose()
+            curr_msg.position.x = float(px)
+            curr_msg.position.y = float(py)
+
+            curr_msg.orientation.z = math.sin(yaw/2.0)
+            curr_msg.orientation.w = math.cos(yaw/2.0)
+            self.curr_pose_pub.publish(curr_msg)
+
+            ref_msg = Pose()
+            ref_msg.position.x = float(ref_block[0, 0])
+            ref_msg.position.y = float(ref_block[1, 0])
+            ref_yaw = float(ref_block[2, 0])
+            ref_msg.orientation.z = math.sin(ref_yaw / 2.0)
+            ref_msg.orientation.w = math.cos(ref_yaw / 2.0)
+            self.ref_pose_pub.publish(ref_msg)
 
         except Exception as e:
             self.get_logger().error(f"NMPC failed: {e}")
