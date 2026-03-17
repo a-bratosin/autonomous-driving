@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     git \
     libboost-python-dev \
     python3-pip \
+    python3-tk \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the CycloneDDS configuration directly into the image
@@ -16,10 +17,17 @@ COPY cyclonedds_laptop.xml /root/cyclonedds.xml
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV CYCLONEDDS_URI=file:///root/cyclonedds.xml
 
+ENV MPLBACKEND=TkAgg
+
 # Source ROS 2 setup automatically for interactive shells
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
-RUN pip install casadi scipy
+
+# Upgrade pip and install with extended timeout
+RUN python3 -m pip install --upgrade pip && \
+    pip install --default-timeout=1000 casadi scipy matplotlib
+
+#RUN pip install casadi scipy
 
 WORKDIR /root/ros2_ws_laptop
 
