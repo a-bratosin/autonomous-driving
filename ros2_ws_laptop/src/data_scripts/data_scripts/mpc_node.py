@@ -16,6 +16,8 @@ from scipy.io import loadmat
 
 from script_msgs.msg import MotorCommandObj
 
+import time
+
 
 class NMPCNode(Node):
 
@@ -43,11 +45,11 @@ class NMPCNode(Node):
         # ---------------- Load reference ----------------
         data = loadmat('Trajectory_data_8.mat')
         self.Ts = float(data['Ts'])
-        self.ref = data['Xref'][:, 1:]   # identical to original
+        self.ref = data['x_aux'][:, 1:]   # identical to original
         self.steps = self.ref.shape[1]
 
         # ---------------- MPC parameters ----------------
-        self.N = 10
+        self.N = 4    # BEST 3
         self.nx = 6
         self.nu = 2
 
@@ -59,6 +61,7 @@ class NMPCNode(Node):
         self.ekf_state = None
         self.imu_omega = 0.0
         self.ref_index = 0
+        self.prag = 20
 
         # ---------------- Build MPC ----------------
         self.build_dynamics()
@@ -102,9 +105,9 @@ class NMPCNode(Node):
         x_ref = opti.parameter(nx, N)
         x0 = opti.parameter(nx, 1)
 
-        Q = np.diag([300, 300, 200, 0.1, 0.1, 0.1])
-        R = np.diag([200, 200])
-        P = 5 * Q
+        Q = np.diag([500, 500, 1000, 100, 100, 1000])   # BEST [500, 500, 100, 10, 10, 1]
+        R = np.diag([10, 10])   # [10, 10]
+        P = 1 * Q
 
         u_bound = np.array([[2.6], [2.6]])
 
@@ -121,7 +124,7 @@ class NMPCNode(Node):
             opti.subject_to(x_v[:, i] == self.F(x0=x_v[:, i - 1], p=u_v[:, i])['xf'])
 
         opti.subject_to(opti.bounded(-u_bound, u_v, u_bound))
-        opti.solver('ipopt', {}, {'print_level': 0})
+        opti.solver('ipopt', {'expand': True}, {'print_level': 0})
 
         self.opti = opti
         self.x_v = x_v
@@ -151,8 +154,8 @@ class NMPCNode(Node):
             self.imu_omega = msg.angular_velocity.z
     def send_stop(self):
         cmd = MotorCommandObj()
-        cmd.left_motor_power= 200
-        cmd.right_motor_power=200
+        cmd.left_motor_power= 0
+        cmd.right_motor_power=0
         cmd.miliseconds = int(500)	
         self.cmd_pub.publish(cmd)
     # --------------------------------------------------
@@ -177,29 +180,45 @@ class NMPCNode(Node):
         ref_block = self.ref[:, self.ref_index:self.ref_index + self.N]
 
         try:
+
             self.opti.set_initial(self.u_v, self.u_warm)
             self.opti.set_initial(self.x_v, self.x_warm)
             
             self.opti.set_value(self.x0, x0_val)
             self.opti.set_value(self.x_ref, ref_block)
-
+            init_time = time.perf_counter()
             sol = self.opti.solve()
+            final_time = time.perf_counter()
             u = sol.value(self.u_v)[:, 0]
+            self.get_logger().info(f"command size: {u.size}")
 
             cmd = MotorCommandObj()
-            if u[0] > 0:
-                cmd.left_motor_power  = int(u[0] * 60 / 2.6 + 40)
-            else:
-                cmd.left_motor_power = int(u[0] * 60 / 2.6 - 40)
-            if u[1] > 0:
-                cmd.right_motor_power = int(u[1] * 60 / 2.6 + 40)
-            else:
-                cmd.right_motor_power = int(u[1] * 60 / 2.6 - 40)
+            if u[0] > 0 and u[0] < self.prag:
+                cmd.left_motor_power  = int(u[0] * (100 - self.prag) / 2.6 + self.prag)
+            if u[0] > self.prag:
+                cmd.left_motor_power = int(u[0] * 100 / 2.6)
+            if u[0] < 0 and u[0] > -self.prag:
+                cmd.left_motor_power  = int(u[0] * (100 - self.prag) / 2.6 - self.prag)
+            if u[0] < self.prag:
+                cmd.left_motor_power = int(u[0] * 100 / 2.6)
+            if u[1] > 0 and u[1] < self.prag:
+                cmd.right_motor_power  = int(u[1] * (100 - self.prag) / 2.6 + self.prag)
+            if u[1] > self.prag:
+                cmd.right_motor_power = int(u[1] * 100 / 2.6)
+            if u[1] < 0 and u[1] > -self.prag:
+                cmd.right_motor_power  = int(u[1] * (100 - self.prag) / 2.6 - self.prag)
+            if u[1] < -self.prag:
+                cmd.right_motor_power = int(u[1] * 100 / 2.6)
             
             cmd.miliseconds = int(self.Ts * 1000)
 
+            self.get_logger().info(f"Motor power: u1 {cmd.right_motor_power}, u2 {cmd.left_motor_power}")
+
             self.cmd_pub.publish(cmd)
             self.ref_index += 1
+
+
+            self.get_logger().info(f"Exec time: {final_time-init_time} for iteration: {self.ref_index-1}")
 
             self.u_warm = sol.value(self.u_v)
             self.x_warm = sol.value(self.x_v)

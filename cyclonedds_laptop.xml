@@ -3,7 +3,7 @@
     <Domain Id="any">
         <General>
             <Interfaces>
-                <NetworkInterface address="192.168.0.187"/>
+                <NetworkInterface address="192.168.0.198"/>
             </Interfaces>
             <AllowMulticast>false</AllowMulticast>
         </General>

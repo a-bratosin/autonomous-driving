@@ -16,6 +16,13 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(rf2o_launch_file)
         ),
 
+        #Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     name='mpc_map_bridge',
+        #     arguments=['0','0','0','1.5708','0','0','map','mpc_frame']
+        #),
+
         Node(
             package='data_scripts',
             executable='ekf_node.py',
