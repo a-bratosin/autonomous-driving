@@ -1,0 +1,40 @@
+FROM dustynv/ros:dashing-desktop-l4t-r32.7.1
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Instalează CycloneDDS, unelte de build și biblioteci suport
+RUN apt-get update && apt-get install -y \
+    ros-dashing-rmw-cyclonedds-cpp \
+    python3-colcon-common-extensions \
+    git \
+    libboost-python-dev \
+    python3-pip \
+    python3-tk \
+    gfortran \
+    libopenblas-dev \
+    liblapack-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiază configurarea CycloneDDS
+COPY cyclonedds_laptop.xml /root/cyclonedds.xml
+
+# Setare variabile de mediu
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV CYCLONEDDS_URI=file:///root/cyclonedds.xml
+ENV MPLBACKEND=TkAgg
+
+# Sursă automată pentru ROS 2 Dashing
+RUN echo "source /opt/ros/dashing/setup.bash" >> /root/.bashrc
+
+# Instalare dependențe numerice/MPC compatibile cu Python 3.6 (Ubuntu 18.04)
+RUN python3 -m pip install --upgrade pip setuptools wheel && \
+    pip3 install --default-timeout=1000 \
+    numpy \
+    matplotlib \
+    scipy \
+    casadi
+
+WORKDIR /root/ros2_ws_jetson
+
+# Clonare branch compatibil dashing pentru rf2o_laser_odometry
+CMD ["bash", "-c", "mkdir -p src && if [ ! -d 'src/rf2o_laser_odometry' ]; then git clone -b dashing-devel https://github.com/MAPIRlab/rf2o_laser_odometry.git src/rf2o_laser_odometry 2>/dev/null || git clone https://github.com/MAPIRlab/rf2o_laser_odometry.git src/rf2o_laser_odometry; fi && exec bash"] 

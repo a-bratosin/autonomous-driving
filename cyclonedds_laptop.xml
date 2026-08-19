@@ -3,13 +3,13 @@
     <Domain Id="any">
         <General>
             <Interfaces>
-                <NetworkInterface address="192.168.0.198"/>
+                <NetworkInterface address="192.168.0.198"/> #ip jetson
             </Interfaces>
             <AllowMulticast>false</AllowMulticast>
         </General>
         <Discovery>
             <Peers>
-                <Peer address="192.168.0.186"/>
+                <Peer address="192.168.0.186"/> # ip device
                 <Peer address="localhost"/>
             </Peers>
             <ParticipantIndex>auto</ParticipantIndex>

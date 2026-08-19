@@ -5,6 +5,7 @@ from rclpy.node import Node
 from nav_msgs.msg import Odometry
 import matplotlib.pyplot as plt
 import threading
+import time
 
 
 class TrajectoryPlotter(Node):
@@ -39,14 +40,15 @@ class TrajectoryPlotter(Node):
     def run_plot(self):
         plt.ion()
         fig, ax = plt.subplots()
-        line, = ax.plot([], [], "-b")
+        line, = ax.plot([], [], "-b", label="EKF Path")
 
         ax.set_xlabel("X [m]")
         ax.set_ylabel("Y [m]")
         ax.set_title("EKF Estimated Trajectory")
         ax.grid(True)
+        ax.legend()
 
-        while True:
+        while rclpy.ok():
             if len(self.x_list) > 1:
                 line.set_xdata(self.x_list)
                 line.set_ydata(self.y_list)
@@ -54,15 +56,16 @@ class TrajectoryPlotter(Node):
                 ax.autoscale()
                 fig.canvas.draw()
                 fig.canvas.flush_events()
+            time.sleep(0.05)  # Prevents 100% CPU usage
 
 
 def main(args=None):
     rclpy.init(args=args)
     node = TrajectoryPlotter()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
-
-
-if __name__ == "__main__":
-    main()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()

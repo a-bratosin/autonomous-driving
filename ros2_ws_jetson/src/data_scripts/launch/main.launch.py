@@ -25,22 +25,22 @@ def generate_launch_description():
 
         Node(
             package='data_scripts',
-            executable='ekf_node.py',
-            name='ekf_node',
+            node_executable='ekf_node.py',
+            node_name='ekf_node',
             output='screen'
         ),
 
         Node(
             package='data_scripts',
-            executable='mpc_node.py',
-            name='mpc_node',
+            node_executable='mpc_node.py',
+            node_name='mpc_node',
             output='screen'
         ),
 
         Node(
             package='data_scripts',
-            executable='debug_plotter.py',
-            name='debug_node',
+            node_executable='debug_plotter.py',
+            node_name='debug_node',
             output='screen'
         )
     ])

@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
-<package format="3">
+<!-- Schimbat in format="2" pentru compatibilitate cu ROS 2 Dashing -->
+<package format="2">
   <name>data_scripts</name>
   <version>0.0.1</version>
-  <description>Splits custom UDP SensorDataObj into LaserScan and IMU topics.</description>
+  <description>MPC, EKF and Trajectory Plotters for Jetson Control</description>
 
   <maintainer email="you@example.com">Your Name</maintainer>
   <license>Apache-2.0</license>
@@ -13,9 +14,11 @@
   <!-- Python -->
   <exec_depend>rclpy</exec_depend>
 
-  <!-- ROS Messages -->
+  <!-- ROS Messages & Transforms -->
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_ros</depend>
 
   <!-- Your custom message package -->
   <depend>script_msgs</depend>
@@ -25,4 +28,3 @@
     <build_type>ament_cmake</build_type>
   </export>
 </package>
-

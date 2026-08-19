@@ -1,0 +1,34 @@
+FROM ros:dashing-ros-base-bionic
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Instalează CycloneDDS, unelte de build și suport hardware I2C/GPIO
+RUN apt-get update && apt-get install -y \
+    ros-dashing-rmw-cyclonedds-cpp \
+    python3-colcon-common-extensions \
+    git \
+    python3-pip \
+    python3-smbus \
+    i2c-tools \
+    python3-rpi.gpio \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalare smbus2 prin pip (dacă nu e disponibil direct în repos)
+RUN python3 -m pip install --upgrade pip && \
+    pip3 install smbus2
+
+# Copiază configurarea CycloneDDS
+COPY cyclonedds_pi.xml /root/cyclonedds.xml
+
+# Setare variabile de mediu
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV CYCLONEDDS_URI=file:///root/cyclonedds.xml
+
+# Sursă automată pentru ROS 2 Dashing
+RUN echo "source /opt/ros/dashing/setup.bash" >> /root/.bashrc
+
+WORKDIR /root/ros2_ws_pi
+
+# Clonare driver sllidar_ros2 compatibil ROS 2
+CMD ["bash", "-c", "mkdir -p src && if [ ! -d 'src/sllidar_ros2' ]; then git clone https://github.com/Slamtec/sllidar_ros2.git src/sllidar_ros2; fi && exec bash"]
+
