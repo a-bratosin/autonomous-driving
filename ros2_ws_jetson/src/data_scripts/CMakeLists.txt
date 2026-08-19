@@ -18,6 +18,7 @@ install(
     data_scripts/trajectory_plotter.py
     data_scripts/mpc_node.py
     data_scripts/debug_plotter.py
+    data_scripts/esp_bridge_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
