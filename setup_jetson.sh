@@ -20,6 +20,6 @@ docker run -it --rm \
     -e NVIDIA_VISIBLE_DEVICES=all \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
-    -v "$(pwd)/ros2_ws_laptop:/root/ros2_ws_jetson" \
+    -v "$(pwd)/ros2_ws_jetson:/root/ros2_ws_jetson" \
     jetson-ros-env
 while sleep 1; do echo "working"; done

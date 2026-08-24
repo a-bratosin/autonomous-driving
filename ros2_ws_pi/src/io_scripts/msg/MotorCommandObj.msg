@@ -1,3 +1,0 @@
-int16 left_motor_power
-int16 right_motor_power
-uint16 miliseconds

@@ -32,7 +32,8 @@ RUN python3 -m pip install --upgrade pip setuptools wheel && \
     numpy \
     matplotlib \
     scipy \
-    casadi
+    casadi \
+    pyserial
 
 WORKDIR /root/ros2_ws_jetson
 
